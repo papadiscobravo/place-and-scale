@@ -141,7 +141,7 @@ console.log("reading in array of cities");
   
   {
     location: [41.879131, -87.620697],
-    name: "280 Bldg: 280 S. Columbus Dr (ceramics, Cafe 280)" 
+    name: "280 Bldg: 280 S. Columbus Dr (Cafe 280)" 
     // population: ""
   },
 
@@ -183,19 +183,19 @@ console.log("reading in array of cities");
 
   {
     location: [41.884797, -87.627933],
-    name: `162 Residences: <a href="https://www.saic.edu/life-at-saic/housing/on-campus" target="_blank">162 N. State St</a>`,
+    name: "162 N. State St",
     // population: ""
   },
 
   {
     location: [41.882006, -87.628187],
-    name: `Jones Hall: <a href="https://www.saic.edu/life-at-saic/housing/on-campus" target="_blank">7 W. Madison</a>`,
+    name: "7 W. Madison",
     // population: ""
   },
 
   {
     location: [41.876868, -87.625675],
-    name: `the Buckingham<br><a href="https://www.saic.edu/life-at-saic/housing/on-campus" target="_blank">59 E. Van Buren</a>`,
+    name: "59 E. Van Buren",
     // population: ""
   },
 

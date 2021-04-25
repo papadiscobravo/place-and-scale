@@ -1,2 +1,4 @@
 # place-and-scale
-This is an idea I'm having about how to understand the scale of different places around the world.
+Through lived experience, we develop a sense of scale about the places we know best. But, when visiting another city, or imagining historical places, it can be difficult to understand scale. This idea in progress is about a way of addressing that. Put concentric rings around a place you know--default one mile, with rings a five-minute walk apart from one another--and imagine yourself traversing it. Then put rings of the same scale over a place you don't know.
+
+Scale can also be used to address the unfamiliar: Just how big was the Mayan city of Chichen Itza? How wide an area was evacuated in the aftermath of Chernobyl, for instance, or decimated by the atomic bom detonated over Nagasaki? From how far away can the peak of Mount Everest be seen on a clear blue day? How do Viking fjords compare to the Great Lakes? And many more uses you're invited to imagine.

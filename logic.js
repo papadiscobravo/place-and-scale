@@ -1,7 +1,11 @@
 console.log("initializing variables");
 // How many locations are there in the array below (and, eventually, in the JSON)?
-var cityCount = 0;
+var placesLength = 0;
 var i = 0;
+
+// This will temporarily store a string for the display version of the date founded for each location
+// while a for loop binds markers to map:
+var placeFoundedDisplay = "";
 
 // storing a couple lat long coordinates as variables to make it faster to change map center while testing
 var ArtICLatLong = [41.879544, -87.624219];
@@ -13,8 +17,16 @@ var UrukLatLong = [31.324167, 45.637222];
 var Po10latlong = [41.864789, -87.613693];
 var royalObsLatLong = [51.478039, -0.0];
 
+// We chould start with the map centered on a random point on the world map:
+var randomLat = Math.floor(Math.random() * 67);
+randomLat *= Math.round(Math.random()) ? 1 : -1;
+
+var randomLong = Math.floor(Math.random() * 181);
+randomLong *= Math.round(Math.random()) ? 1 : -1;
+
 // This is where the map is centered.
-var centerLatLong = elCaracolLatLong;
+var centerLatLong = [randomLat, randomLong];
+console.log(`randomLatLong: ${centerLatLong}`);
 
 // Early on, I started to go down the road of storing each URL in its own variable, but of course that's a bad idea.
 var SAICURL = "http://www.saic.edu";
@@ -190,7 +202,7 @@ console.log("reading in the array of cities");
   // I can put the data in this array into a table in a SQLite database, from which Flask will retrieve a JSON.
   // I also started by storing URL in the name, which I will separate out into different fields in the db.
 
-  var cities = [
+  var places = [
   {
     location: [41.883841, -87.6],
     name: `<a href="http://www.chicago.gov" target="_blank">Chicago</a>`,
@@ -294,6 +306,13 @@ console.log("reading in the array of cities");
   },  
 
   {
+    location: [52.521667, 13.413333],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Alexanderplatz" target="_blank">Alexanderplatz</a>`,
+    founded: 1805,
+    population: "0"
+  },  
+
+  {
     location: [43.677778, 4.631111],
     name: `<a href="https://en.wikipedia.org/wiki/Arles_Amphitheatre" target="_blank">Arles Amphitheater</a>`,
     founded: 90,
@@ -350,9 +369,30 @@ console.log("reading in the array of cities");
   },  
 
   {
+    location: [22.564444, 88.343333],
+    name: `<a href="https://en.wikipedia.org/wiki/Eden_Gardens" target="_blank">Eden Gardens</a>`,
+    founded: 1864,
+    population: "0"
+  },  
+
+  {
+    location: [29.976111, 31.132778],
+    name: `<a href="https://en.wikipedia.org/Giza_pyramid_complex" target="_blank">Giza Necropolis</a>`,
+    founded: -2580,
+    population: ""
+  },  
+
+  {
     location: [54.491111, 9.565278],
     name: `<a href="https://en.wikipedia.org/wiki/Hedeby" target="_blank">Hedeby/Haithabu</a>`,
     founded: 770,
+    population: ""
+  },  
+
+  {
+    location: [34.112778, -118.338889],
+    name: `<a href="https://en.wikipedia.org/wiki/Hollywood_Bowl" target="_blank">Hollywood Bowl</a>`,
+    founded: 1922,
     population: ""
   },  
 
@@ -361,6 +401,20 @@ console.log("reading in the array of cities");
     name: `<a href="https://en.wikipedia.org/wiki/Hiroshima" target="_blank">Hiroshima</a>`,
     founded: 1598,
     population: "1,199,391 (2019); 255,260 (1945)"
+  },  
+
+  {
+    location: [23.126222, 113.31925],
+    name: `<a href="https://en.wikipedia.org/wiki/Huacheng_Square" target="_blank">Huacheng Square</a>`,
+    founded: 2010,
+    population: ""
+  },  
+
+  {
+    location: [28.612864, 77.229306],
+    name: `<a href="https://en.wikipedia.org/wiki/India_Gate" target="_blank">India Gate Complex</a>`,
+    founded: 1921,
+    population: ""
   },  
 
   {
@@ -392,9 +446,37 @@ console.log("reading in the array of cities");
   },
 
   {
+    location: [25.668611, -100.309722],
+    name: `the <a href="http://www.louvre.fr" target="_blank">Macroplaza</a>`,
+    founded: 1982,
+    population: "0"
+  },
+
+  {
+    location: [32.65745, 51.677778],
+    name: `<a href="https://en.wikipedia.org/wiki/Naqsh-e_Jahan_Square" target="_blank">Meidan Emam</a>`,
+    founded: 1598,
+    population: ""
+  },
+
+  {
     location: [37.395810, 46.209219],
     name: `<a href="https://en.wikipedia.org/wiki/Maragheh_observatory" target="_blank">Maragheh</a>`,
     founded: 1197,
+    population: ""
+  },
+
+  {
+    location: [-22.912167, -43.230164],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Maracan%C3%A3_Stadium" target="_blank">Maracanã Stadium</a>`,
+    founded: 1950,
+    population: ""
+  },
+
+  {
+    location: [33.755, -84.372222],
+    name: `<a href="https://en.wikipedia.org/wiki/Martin_Luther_King_Jr._National_Historical_Park" target="_blank">Martin Luther King Jr. National Historical Park</a>`,
+    founded: 1980,
     population: ""
   },
 
@@ -412,6 +494,13 @@ console.log("reading in the array of cities");
     population: ""
   },  
  
+  {
+    location: [-6.175278, 106.827222],
+    name: `<a href="https://en.wikipedia.org/wiki/Merdeca_Square" target="_blank">Merdeca Square</a>`,
+    founded: 1976,
+    population: "0"
+  },
+
   {
     location: [40.779546, -73.962916],
     name: `<a href="http://www.metmuseum.org" target="_blank">the Metropolitan Museum of Art</a>`,
@@ -469,6 +558,13 @@ console.log("reading in the array of cities");
   },  
 
   {
+    location: [-33.437492, -70.651062],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Plaza_de_Armas_(Santiago)" target="_blank">Plaza de Armas</a>, Santiago`,
+    founded: 1541,
+    population: ""
+  },  
+
+  {
     location: [48.853279, 2.348468],
     name: `<a href="http://www.paris.fr" target="_blank">Paris: Point zéro des routes de France</a>`,
     founded: 1924,
@@ -490,9 +586,30 @@ console.log("reading in the array of cities");
   },
 
   {
+    location: [48.5604, 3.299],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Provins" target="_blank">Provins</a>, Ville-Haute`,
+    founded: "",
+    population: ""
+  },
+
+  {
+    location: [14.651417, 121.049167],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Quezon_Memorial_Circle" target="_blank">Quezon Memorial Circle</a>`,
+    founded: 1940,
+    population: ""
+  },
+
+  {
     location: [55.754167, 37.62],
     name: `<a href="https://en.m.wikipedia.org/wiki/Red_Square" target="_blank">Red Square</a>`,
     founded: 1493,
+    population: ""
+  },
+
+  {
+    location: [14.5825, 120.978333],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Rizal_Park" target="_blank">Rizal Park</a>`,
+    founded: 1820,
     population: ""
   },
 
@@ -511,9 +628,30 @@ console.log("reading in the array of cities");
   },
 
   {
+    location: [-4.33, 15.310278],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Stade_des_Martyrs" target="_blank">Stade des Martyrs</a>`,
+    founded: 1992,
+    population: "0"
+  },
+
+  {
     location: [51.178889, -1.826111],
     name: `<a href="https://en.wikipedia.org/wiki/Stonehenge" target="_blank">Stonehenge</a>`,
     founded: -2500,
+    population: "0"
+  },
+
+  {
+    location: [-10.184583, -48.333694],
+    name: `<a href="https://en.wikipedia.org/wiki/Sunflower_Square" target="_blank">Sunflower Square</a>`,
+    founded: 1991,
+    population: "0"
+  },
+
+  {
+    location: [27.175, 78.041944],
+    name: `<a href="https://en.wikipedia.org/wiki/Taj_Mahal" target="_blank">Taj Mahal</a>`,
+    founded: 1653,
     population: "0"
   },
 
@@ -547,7 +685,7 @@ console.log("reading in the array of cities");
 
   {
     location: [40.757, -73.986],
-    name: `<a href="https://en.m.wikipedia.org/wiki/Times_Square" target="_blank">Times Square</a>`,
+    name: `<a href="https://en.m.wikipedia.org/wiki/Times_Square" target="_blank">Times Square</a> New York`,
     founded: 1872,
     population: ""
   },  
@@ -582,7 +720,14 @@ console.log("reading in the array of cities");
 
   {
     location: [19.432778, -99.133056],
-    name: `<a href="https://en.m.wikipedia.org/wiki/Z%C3%B3calo" target="_blank">the Zócalo</a>`,
+    name: `<a href="https://en.m.wikipedia.org/wiki/Z%C3%B3calo" target="_blank">Xinghai Square</a>`,
+    founded: 1997,
+    population: ""
+  },  
+
+  {
+    location: [38.881111, 121.582778],
+    name: `<a href="https://en.wikipedia.org/wiki/Xinghai_Square" target="_blank">the Zócalo</a>`,
     founded: 1523,
     population: ""
   },  
@@ -590,30 +735,55 @@ console.log("reading in the array of cities");
   ];
 
 // cityLength stores how many records there are in the array called cities:
-var cityLength = cities.length;
-console.log(`Read in array of ${cityLength} cities.`);
+var cityLength = places.length;
+console.log(`Read in array of ${placesLength} places.`);
 
-// drawing a line around the world along the 45th parallel north...
-var N45 = [
+  // This loops through the array called places and creates one marker for each place,
+  // then binds a popup containing that place's info and adds it to the map.
+  for (var i = 0; i < placesLength; i++) {
+    var place = places[i];
+    L.marker(place.location)
+      .bindPopup("<h2>" + place.name + "</h2> <hr> <h3>founded " + place.founded + "</h3>")
+      .addTo(myMap);
+    // console.log(`marked ${i+1}`);
+  };
+
+
+// If the visitor lands in a random spot in a big ocean,
+// they should at least see a line and know the interface isn't broken.
+
+// So drawing a red line around the world along the 45th parallel north...
+var parallel = [
       [45.00, -180],
       [45.00, 180]
     ];
-L.polyline(N45, {
+L.polyline(parallel, {
     color: "red",
     weight: "0.75"
     }).addTo(myMap);
 
-// ...and along the 45th parallel south.
-var S45 = [
+
+// ...the equator...    
+    var parallel = [
+      [0, -180],
+      [0, 180]
+    ];
+L.polyline(parallel, {
+    color: "#9999ff",
+    weight: "0.75"
+    }).addTo(myMap);
+
+    // ...and the 45th parallel south.
+var parallel = [
     [-45.00, -180],
     [-45.00, 180]
   ];
-L.polyline(S45, {
+L.polyline(parallel, {
     color: "red",
     weight: "0.75"
     }).addTo(myMap);
 
-console.log("drew a line around the world at the 45th parallels north and south");
+console.log("drew a line around the world at the equator and the 45th parallels north and south");
 
 
 // The axe historique in Paris starts at la Défense and ends in front of the Louvre.
@@ -627,17 +797,6 @@ weight: "2"
 }).addTo(myMap);
 
 console.log("drew a line along l'axe historique in Paris");
-
-
-  // This loops through the array called cities and creates one marker for each place,
-  // then binds a popup containing that place's info and adds it to the map.
-  for (var i = 0; i < cityLength; i++) {
-    var city = cities[i];
-    L.marker(city.location)
-      .bindPopup("<h2>" + city.name + "</h2> <hr> <h3>founded " + city.founded + "</h3>")
-      .addTo(myMap);
-    console.log(`marked ${i+1}`);
-  };
 
 console.log(`Now checking whether largest circle desired (${miles}-mile radius) is greater than or less than 1 mile`);
 
@@ -665,7 +824,7 @@ if (miles >= 1) {
           fillOpacity: opacity,
           radius: radius * 1609.34
         }).addTo(myMap);
-        console.log(`drew ${radius*2}-mile diameter circle enclosing an area of ${Math.round(radius*radius*Math.PI)} square miles around the center point`);
+        // console.log(`drew ${radius*2}-mile diameter circle enclosing an area of ${Math.round(radius*radius*Math.PI)} square miles around the center point`);
         // opacity = opacity + opacityChange;
         // r = r + colorChange;
         g = g + colorChange;
@@ -678,4 +837,5 @@ if (miles >= 1) {
     };
 
 console.log(`checked whether largest circle desired (${miles}-mile radius) was greater than or less than 1 mile.`);
+console.log(`randomLatLong: ${centerLatLong} zoom level ${zoom}`);
 console.log("finished running this script");

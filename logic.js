@@ -4,26 +4,32 @@ var i = 0;
 var ArtICLatLong = [41.879544, -87.624219];
 var elCaracolLatLong = [20.66667, -88.56667];
 var ColiseumLatLong = [41.8902, 12.4924];
+var LouvreLatLong = [48.861111, 2.336389];
 var NuukLatLong = [64.1814, -51.6941];
 var UrukLatLong = [31.324167, 45.637222];
-var centerLatLong = NuukLatLong;
+var centerLatLong = LouvreLatLong;
 var cityCount = 0;
 var SAICURL = "http://www.saic.edu";
 var Po10latlong = [41.864789, -87.613693];
 var Po10URL = "https://www.eamesoffice.com/education/powers-of-ten-2/";
 var royalObsLatLong = [51.478039, -0.0];
-
-var color = "#ffffff";
-// var color = "#669999";
-var colorChange = -100;
+var constant = 4
+var r = 255;
+var g = 255;
+var b = 255;
+var color = [r, g, b];
+console.log(`color: ${color}`)
+var colorChange = 255 / constant * -1;
+console.log(`color change: ${colorChange}`)
 var fillColor = color;
-var miles = 1;
+var fillColorChange = colorChange;
+var miles = 10;
 console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*5280)} feet) across.`);
 var radius = 0;
-var radiusIncrements = miles / 4;
+var radiusIncrements = miles / constant;
 console.log(`Each circle will be ${radiusIncrements} miles (${Math.round(radiusIncrements*5280)} feet) or about a ${Math.round(20 / (miles / radiusIncrements))} minute walk further from the center than the last.`);
-var opacity = 0.15;
-var opacityChange = -0.03;
+var opacity = .2;
+var opacityChange = 0.0;
 // var opacityChange = opacity / miles * -1;
 var zoom = 2;
 
@@ -235,6 +241,12 @@ console.log("reading in array of cities");
   },  
 
   {
+    location: [42.142293, -102.857987],
+    name: `<a href="https://en.wikipedia.org/wiki/Carhenge" target="_blank">Carhenge</a>`,
+    population: "0"
+  },
+
+  {
     location: [20.66667, -88.56667],
     name: `<a href="https://www.exploratorium.edu/ancientobs/chichen/HTML/caracol.html" target="_blank">El Caracol observatory, Chichen Itza</a>`,
     population: "0"
@@ -277,6 +289,13 @@ console.log("reading in array of cities");
   },
 
   {
+    location: [48.861111, 2.336389],
+    name: `<a href="http://www.louvre.fr" target="_blank">the Louvre</a>`,
+    name: "",
+    population: "0"
+  },
+
+  {
     location: [37.395810, 46.209219],
     name: `<a href="https://en.wikipedia.org/wiki/Maragheh_observatory" target="_blank">Maragheh</a>`,
     population: ""
@@ -288,6 +307,13 @@ console.log("reading in array of cities");
     population: ""
   },  
  
+  {
+    location: [40.779546, -73.962916],
+    name: `<a href="http://www.metmuseum.org" target="_blank">the Metropolitan Museum of Art</a>`,
+    name: "",
+    population: "0"
+  },
+
   {
     location: [45.000000, -93.2739],
     name: "Minneapolis where the north 45th parallel crosses the Mississippi River",
@@ -349,6 +375,12 @@ console.log("reading in array of cities");
   },
 
   {
+    location: [51.178889, -1.826111],
+    name: `<a href="https://en.wikipedia.org/wiki/Stonehenge" target="_blank">Stonehenge</a>`,
+    population: "0"
+  },
+
+  {
     location: [-16.795867, -180],
     name: `<a href="https://en.wikipedia.org/wiki/Taveuni" target="_blank">Taveuni Island, Fiji-International Date Line</a>`,
     population: "19,000 (est.)"
@@ -402,7 +434,23 @@ L.polyline(S45, {
     weight: "0.75"
     }).addTo(myMap);
 
-console.log("drew a line around the world at the 45th parallels north and south");  
+console.log("drew a line around the world at the 45th parallels north and south");
+
+
+// The axe historique in Paris
+// starts at la Défense, say [48.890171, 2.243282]
+// and ends in front of the Louvre, about [48.861613, 2.333366]
+var axeHistorique = [
+  [48.890171, 2.243282],
+  [48.861613, 2.333366]
+];
+L.polyline(axeHistorique, {
+color: "blue",
+weight: "2"
+}).addTo(myMap);
+
+console.log("drew a line along the axe historique in Paris");
+
 
   // Loop through the cities array and create one marker for each city, bind a popup containing its name and population add it to the map
   for (var i = 0; i < cityLength; i++) {
@@ -410,7 +458,7 @@ console.log("drew a line around the world at the 45th parallels north and south"
     L.marker(city.location)
       .bindPopup("<h1>" + city.name + "</h1> <hr> <h3>Population " + city.population + "</h3>")
       .addTo(myMap);
-    console.log(`${i+1}: marked ${city.name}`);
+    console.log(`marked ${i+1}`);
   };
 console.log(`checked whether largest circle desired (${miles} miles) was greater than or less than 1 mile`);
 
@@ -433,14 +481,17 @@ if (miles >= 1) {
 
         // Create a circle and give it attributes
         L.circle(centerLatLong, {
-          color: color,
+          color: "#ffffff",
           fillColor: fillColor,
           fillOpacity: opacity,
           radius: radius * 1609.34
         }).addTo(myMap);
         console.log(`drew ${radius*2}-mile diameter circle enclosing an area of ${Math.round(radius*radius*Math.PI)} square miles around the center point`);
-        opacity = opacity + opacityChange;
-        color = color + colorChange;
+        // opacity = opacity + opacityChange;
+        // r = r + colorChange;
+        g = g + colorChange;
+        // b = b + colorChange;
+        fillColor = [r, g, b];
         console.log(`color: ${color} opacity: ${opacity}`);
         radius = radius + radiusIncrements;
         };

@@ -2,14 +2,19 @@ console.log("initializing variables");
 var cityCount = 0;
 var i = 0;
 var ArtICLatLong = [41.879544, -87.624219];
+var elCaracolLatLong = [20.66667, -88.56667];
+var ColiseumLatLong = [41.8902, 12.4924];
 var NuukLatLong = [64.1814, -51.6941];
-var centerLatLong = ArtICLatLong;
+var UrukLatLong = [31.324167, 45.637222];
+var centerLatLong = NuukLatLong;
 var cityCount = 0;
 var SAICURL = "http://www.saic.edu";
 var Po10latlong = [41.864789, -87.613693];
 var Po10URL = "https://www.eamesoffice.com/education/powers-of-ten-2/";
 var royalObsLatLong = [51.478039, -0.0];
-var color = "#669999"
+
+var color = "#ffffff";
+// var color = "#669999";
 var colorChange = -100;
 var fillColor = color;
 var miles = 1;
@@ -17,9 +22,9 @@ console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*528
 var radius = 0;
 var radiusIncrements = miles / 4;
 console.log(`Each circle will be ${radiusIncrements} miles (${Math.round(radiusIncrements*5280)} feet) or about a ${Math.round(20 / (miles / radiusIncrements))} minute walk further from the center than the last.`);
-var opacity = 0.05;
-var opacityChange = opacity / miles * -1;
-// var opacityChange = 0;
+var opacity = 0.15;
+var opacityChange = -0.03;
+// var opacityChange = opacity / miles * -1;
 var zoom = 2;
 
 switch (miles <= 1999) {
@@ -230,6 +235,12 @@ console.log("reading in array of cities");
   },  
 
   {
+    location: [20.66667, -88.56667],
+    name: `<a href="https://www.exploratorium.edu/ancientobs/chichen/HTML/caracol.html" target="_blank">El Caracol observatory, Chichen Itza</a>`,
+    population: "0"
+  },  
+
+  {
     location: [36.0530, -107.9559],
     name: `<a href="https://www.nps.gov/chcu/learn/historyculture/index.htm" target="_blank">Chaco Canyon</a>`,
     population: ""
@@ -248,8 +259,8 @@ console.log("reading in array of cities");
   },
 
   {
-    location: [20.66667, -88.56667],
-    name: `<a href="https://www.exploratorium.edu/ancientobs/chichen/HTML/caracol.html" target="_blank">El Caracol observatory, Chichen Itza</a>`,
+    location: [41.8902, 12.4924],
+    name: `<a href="https://en.wikipedia.org/wiki/Colosseum" target="_blank">The Coliseum</a>`,
     population: "0"
   },  
 
@@ -271,6 +282,12 @@ console.log("reading in array of cities");
     population: ""
   },
 
+  {
+    location: [40.820856, -96.705637],
+    name: `<a href="https://en.wikipedia.org/wiki/Memorial_Stadium_(Lincoln)" target="_blank"> Memorial Stadium, Lincoln, Nebraska</a>`,
+    population: ""
+  },  
+ 
   {
     location: [45.000000, -93.2739],
     name: "Minneapolis where the north 45th parallel crosses the Mississippi River",
@@ -422,8 +439,9 @@ if (miles >= 1) {
           radius: radius * 1609.34
         }).addTo(myMap);
         console.log(`drew ${radius*2}-mile diameter circle enclosing an area of ${Math.round(radius*radius*Math.PI)} square miles around the center point`);
-        opacity + opacityChange;
-        color + colorChange;
+        opacity = opacity + opacityChange;
+        color = color + colorChange;
+        console.log(`color: ${color} opacity: ${opacity}`);
         radius = radius + radiusIncrements;
         };
         console.log(`finished running a loop to draw concentric circles out to ${miles} miles around the center point`);

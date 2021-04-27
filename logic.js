@@ -1,38 +1,70 @@
 console.log("initializing variables");
+// How many locations are there in the array below (and, eventually, in the JSON)?
 var cityCount = 0;
 var i = 0;
+
+// storing a couple lat long coordinates as variables to make it faster to change map center while testing
 var ArtICLatLong = [41.879544, -87.624219];
 var elCaracolLatLong = [20.66667, -88.56667];
 var ColiseumLatLong = [41.8902, 12.4924];
 var LouvreLatLong = [48.861111, 2.336389];
 var NuukLatLong = [64.1814, -51.6941];
 var UrukLatLong = [31.324167, 45.637222];
-var centerLatLong = LouvreLatLong;
-var cityCount = 0;
-var SAICURL = "http://www.saic.edu";
 var Po10latlong = [41.864789, -87.613693];
-var Po10URL = "https://www.eamesoffice.com/education/powers-of-ten-2/";
 var royalObsLatLong = [51.478039, -0.0];
-var constant = 4
+
+// This is where the map is centered.
+var centerLatLong = elCaracolLatLong;
+
+// Early on, I started to go down the road of storing each URL in its own variable, but of course that's a bad idea.
+var SAICURL = "http://www.saic.edu";
+var Po10URL = "https://www.eamesoffice.com/education/powers-of-ten-2/";
+
+// How many divisions do we want to see the largest circle (radius set in the variable called miles) divided into?
+// How many concentric circles do we want to see?
+// If we can give visitors one more variable to change (probably within a set range) this would be it.
+var divisions = 10
+
+// If we let visitors change one variable, it would be miles, which sets the radius of the widest concentric circle.
+var miles = 1000;
+console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*5280)} feet) across.`);
+
+// experimenting with color, setting a separate value for red, green, and blue
+// This could give a color gradient, but I think varying opacity is sufficient.
 var r = 255;
 var g = 255;
 var b = 255;
+// Color is the color of the boundary of the concentric circle.
 var color = [r, g, b];
 console.log(`color: ${color}`)
-var colorChange = 255 / constant * -1;
+
+// colorChange is how much each color will change from one concentric circle to the next.
+var colorChange = 255 / divisions * -1;
 console.log(`color change: ${colorChange}`)
+
+// fillColor is the color of the interior of the concentric circle.
 var fillColor = color;
 var fillColorChange = colorChange;
-var miles = 10;
-console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*5280)} feet) across.`);
+
+// Radius starts at zero, but, when code gets to the loop that makes concentric circles,
+// radius will iterate by radiusIncrements up to the limit set in miles.
 var radius = 0;
-var radiusIncrements = miles / constant;
+
+// how many miles apart is one concentric circle from the next?
+var radiusIncrements = miles / divisions;
 console.log(`Each circle will be ${radiusIncrements} miles (${Math.round(radiusIncrements*5280)} feet) or about a ${Math.round(20 / (miles / radiusIncrements))} minute walk further from the center than the last.`);
+
+// There's loads of sublety to here.
+// If we have satellite view and street view, there are probably two different optimal values for opacity to set here.
 var opacity = .2;
-var opacityChange = 0.0;
+var opacityChange = -0.05;
 // var opacityChange = opacity / miles * -1;
+
+// This sets zoom level at 2, which shows the whole world. I think we should start the map at this zoom level.
 var zoom = 2;
 
+// Here's a long switch statement that sets zoom level based on the radius of the outermost circle, set in the variable miles.
+// It deserves a bit more refinement at the small end of the scale.
 switch (miles <= 1999) {
 
     case miles > 1999:
@@ -93,6 +125,10 @@ switch (miles <= 1999) {
       
     };
 
+// I made a table of what size circle fit well at what zoom level on my computer.
+// It would be different based on a device's screen resolution, as well as what percent of the browser window the map takes up,
+// but the real point is to avoic being zoomed so far in that the visitor only sees one circle, or none at all,
+// and thinks it's broken.
 // zoom   mile radius
 //  2      5000
 //  3      2500
@@ -121,32 +157,44 @@ console.log(`based on a maximum radius of ${miles}, this map starts at zoom leve
 console.log("initialized variables");
 
 
-// Create a map object
+// Create a map object.
 var myMap = L.map("map", {
     center: centerLatLong,
     zoom: zoom
   });
 console.log("created a map object");
 
-  // Add a tile layer
+  // Add the tile layer.
   L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
     tileSize: 512,
     maxZoom: 24,
     zoomOffset: -1,
- //   id: "mapbox/streets-v11",
-    id: "mapbox/dark-v10",
+  // For development so far, I've just been changing map view here.
+  // streets-v11 is familiar but sometimes cluttered.
+  // dark-v10 is especially useful for laying color over.
+  // If we run out of time to let visitors set map view, I'd leave satellite-v9 as the default.
+    // id: "mapbox/streets-v11",
+    // id: "mapbox/dark-v10",
+    id: "mapbox/satellite-v9",
+
+  // API key
     accessToken: API_KEY
   }).addTo(myMap);
 
-console.log("added a tile layer");
+  console.log("added a tile layer, read in the API key, and set the map view");
 
-console.log("reading in array of cities");
-  // An array containing each city's name, location, and population
+console.log("reading in the array of cities");
+  // The array containing each place's name, location, and date founded. It's not really cities any more.
+  // Some of them still have population, which is a holdover from the Activity 3 code this started from.
+  // I can put the data in this array into a table in a SQLite database, from which Flask will retrieve a JSON.
+  // I also started by storing URL in the name, which I will separate out into different fields in the db.
+
   var cities = [
   {
     location: [41.883841, -87.6],
     name: `<a href="http://www.chicago.gov" target="_blank">Chicago</a>`,
+    founded: 1837,
     population: "2,720,546"
   },
   
@@ -213,209 +261,339 @@ console.log("reading in array of cities");
   {
     location: [41.880831, -87.626182],
     name: `<a href="${SAICURL}" target="_blank">School of the Art Institute of Chicago</a>`,
+    founded: 1866,
     population: "3,519 students"
   },
 
   {
     location: ArtICLatLong,
     name: `<a href="http://artic.edu" target="_blank">Art Institute of Chicago</a>`,
+    founded: 1879,
     population: "0"
   },
 
   {
     location: Po10latlong,
     name: `<a href="${Po10URL}" target="_blank">Powers of Ten picnic site</a>`,
+    founded: 1968,
     population: "2"
   },
 
   {
     location: [0, 0],
     name: `<a href="https://www.explainxkcd.com/wiki/index.php/2344:_26-Second_Pulse" target="_blank">26-second pulse</a> <br> (<a href="http://ciei.colorado.edu/pubs/2006/3.pdf" target="_blank">see also</a>)`,
+    founded: "",
     population: "0<br>location approximate"
   },  
 
   {
+    location: [55.382469, 14.054739],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Ale%27s_Stones" target="_blank">Ale's Stones</a>`,
+    founded: 600,
+    population: "0"
+  },  
+
+  {
+    location: [43.677778, 4.631111],
+    name: `<a href="https://en.wikipedia.org/wiki/Arles_Amphitheatre" target="_blank">Arles Amphitheater</a>`,
+    founded: 90,
+    population: "0"
+  },
+
+  {
     location: [39.9061, 116.4281],
     name: `<a href="https://en.wikipedia.org/wiki/Beijing_Ancient_Observatory" target="_blank">Beijing Ancient Observatory</a>`,
+    founded: 1442,
     population: ""
   },  
 
   {
     location: [42.142293, -102.857987],
     name: `<a href="https://en.wikipedia.org/wiki/Carhenge" target="_blank">Carhenge</a>`,
+    founded: 1987,
     population: "0"
   },
 
   {
     location: [20.66667, -88.56667],
     name: `<a href="https://www.exploratorium.edu/ancientobs/chichen/HTML/caracol.html" target="_blank">El Caracol observatory, Chichen Itza</a>`,
+    founded: 906,
     population: "0"
   },  
 
   {
     location: [36.0530, -107.9559],
     name: `<a href="https://www.nps.gov/chcu/learn/historyculture/index.htm" target="_blank">Chaco Canyon</a>`,
+    founded: 900,
     population: ""
   },
 
   {
     location: [51.389167, 30.099444],
     name: `<a href="https://en.wikipedia.org/wiki/Chernobyl_Nuclear_Power_Plant" target="_blank">Reactor no. 4</a>`,
+    founded: 1977,
     population: ""
   },
 
   {
     location: [-9.556667, -78.235833],
     name: `<a href="https://www.wmf.org/project/chankillo" target="_blank">Chankillo</a>`,
+    founded: -400,
     population: ""
   },
 
   {
     location: [41.8902, 12.4924],
     name: `<a href="https://en.wikipedia.org/wiki/Colosseum" target="_blank">The Coliseum</a>`,
+    founded: 80,
     population: "0"
+  },  
+
+  {
+    location: [54.491111, 9.565278],
+    name: `<a href="https://en.wikipedia.org/wiki/Hedeby" target="_blank">Hedeby/Haithabu</a>`,
+    founded: 770,
+    population: ""
   },  
 
   {
     location: [34.384498462, 132.453164854],
     name: `<a href="https://en.wikipedia.org/wiki/Hiroshima" target="_blank">Hiroshima</a>`,
+    founded: 1598,
     population: "1,199,391 (2019); 255,260 (1945)"
   },  
 
   {
+    location: [37.443889, -6.046667],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Roman_amphitheatre_of_Italica" target="_blank">Amphitheater of Italica</a>`,
+    founded: 138,
+    population: "0"
+  },
+
+  {
     location: [-0.0001, 9.454167],
     name: `<a href="https://en.wikipedia.org/wiki/Libreville" target="_blank">Libreville, Gabon</a>`,
+    founded: 1839,
     population: "703,904 (2013)"
+  },
+
+  {
+    location: [48.85, 2.35],
+    name: `<a href="https://en.wikipedia.org/wiki/Lutecia" target="_blank">Lutecia</a>`,
+    founded: -52,
+    population: "0"
   },
 
   {
     location: [48.861111, 2.336389],
     name: `<a href="http://www.louvre.fr" target="_blank">the Louvre</a>`,
-    name: "",
+    founded: 1200,
     population: "0"
   },
 
   {
     location: [37.395810, 46.209219],
     name: `<a href="https://en.wikipedia.org/wiki/Maragheh_observatory" target="_blank">Maragheh</a>`,
+    founded: 1197,
+    population: ""
+  },
+
+  {
+    location: [42.36, -71.092],
+    name: `<a href="http://mit.edu" target="_blank">Massachusetts Institute of Technology</a>`,
+    founded: 1861,
     population: ""
   },
 
   {
     location: [40.820856, -96.705637],
     name: `<a href="https://en.wikipedia.org/wiki/Memorial_Stadium_(Lincoln)" target="_blank"> Memorial Stadium, Lincoln, Nebraska</a>`,
+    founded: 1923,
     population: ""
   },  
  
   {
     location: [40.779546, -73.962916],
     name: `<a href="http://www.metmuseum.org" target="_blank">the Metropolitan Museum of Art</a>`,
-    name: "",
+    founded: 1870,
     population: "0"
   },
 
   {
     location: [45.000000, -93.2739],
     name: "Minneapolis where the north 45th parallel crosses the Mississippi River",
+    founded: 1856,
     population: "420,324"
   },
   
   {
     location: [27.988100, 86.925000],
     name: `<a href="https://en.wikipedia.org/wiki/Mount_Everest" target="_blank">peak of Mount Everest</a>`,
+    founded: "",
     population: "0"
   },  
 
   {
     location: [32.770913583, 129.857913235],
     name: `<a href="https://en.wikipedia.org/wiki/Nagasaki" target="_blank">Nagasaki</a>`,
+    founded: 1571,
     population: "407,624 (2020); 195,290 (1945)"
   },  
 
   {
     location: [40.7128, -74.0059],
     name: `<a href="http://www.nyc.gov" target="_blank">New York</a>`,
+    founded: 1624,
     population: "8,550,405"
   },
 
   {
     location: [90, 0],
     name: `<a href="https://en.wikipedia.org/wiki/North_Pole" target="_blank">the North Pole</a>`,
+    founded: "",
     population: "0"
   },
 
   {
     location: [64.1814, -51.6941],
     name: `<a href="https://naalakkersuisut.gl/en" target="_blank">Nuuk, Greenland</a>`,
+    founded: -2200,
     population: "18,326"
   },  
   
   {
+    location: [40.001667, -83.019722],
+    name: `<a href="https://en.wikipedia.org/wiki/Ohio_Stadium" target="_blank">Ohio Stadium</a>`,
+    founded: 1922,
+    population: "0"
+  },  
+
+  {
     location: [48.853279, 2.348468],
     name: `<a href="http://www.paris.fr" target="_blank">Paris: Point zéro des routes de France</a>`,
+    founded: 1924,
     population: "2,161,000 (est.)"
   },  
 
   {
+    location: [40.751264, 14.49497],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Amphitheatre_of_Pompeii" target="_blank">Amphitheater of Pompei</a>`,
+    founded: -70,
+    population: "0"
+  },
+
+  {
     location: [51.405556, 30.056944],
     name: `<a href="https://en.wikipedia.org/wiki/Pripyat" target="_blank">Pripyat</a>`,
+    founded: 1970,
     population: `49,360 (1986); <a href="https://www.bbc.co.uk/news/resources/idt-sh/moving_to_Chernobyl" target="_blank">120-150 in entire exclusion zone today</a>`
+  },
+
+  {
+    location: [55.754167, 37.62],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Red_Square" target="_blank">Red Square</a>`,
+    founded: 1493,
+    population: ""
   },
 
   {
     location: royalObsLatLong,
     name: `<a href="https://www.rmg.co.uk/royal-observatory" target="_blank">Royal Observatory, Greenwich</a>`,
+    founded: 1676,
     population: ""
   },  
 
   {
     location: [-90, 0],
     name: `<a href="https://en.wikipedia.org/wiki/South_Pole" target="_blank">the South Pole</a>`,
+    founded: "",
     population: "0"
   },
 
   {
     location: [51.178889, -1.826111],
     name: `<a href="https://en.wikipedia.org/wiki/Stonehenge" target="_blank">Stonehenge</a>`,
+    founded: -2500,
     population: "0"
   },
 
   {
     location: [-16.795867, -180],
     name: `<a href="https://en.wikipedia.org/wiki/Taveuni" target="_blank">Taveuni Island, Fiji-International Date Line</a>`,
+    founded: "",
     population: "19,000 (est.)"
   },  
 
   {
     location: [64.253806, -21.03725],
     name: `<a href="https://www.thingsites.com/thing-site-profiles/thingvellir-iceland" target="_blank">Thingvellir</a>`,
+    founded: 930,
     population: ""
   },  
 
   {
+    location: [39.901996392, 116.38833178],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Tianamen_Square" target="_blank">Tianamen Square</a>`,
+    founded: 1651,
+    population: ""
+  },
+
+  {
     location: [16.775833, -3.009444],
     name: `<a href="https://en.wikipedia.org/wiki/Timbuktu" target="_blank">Timbuktu</a> ancient center of learning`,
+    founded: 1100,
     population: "54,453 (2009)"
+  },  
+
+  {
+    location: [40.757, -73.986],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Times_Square" target="_blank">Times Square</a>`,
+    founded: 1872,
+    population: ""
+  },  
+
+  {
+    location: [51.508056, -0.128056],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Trafalgar_Square" target="_blank">Trafalgar Square</a>`,
+    founded: 1200,
+    population: ""
   },  
 
   {
     location: [44.967243, -103.771556],
     name: `<a href="https://www.ngs.noaa.gov/commemorative/marks.shtml" target="_blank">geographical center of the United States</a>`,
+    founded: 1959,
     population: "0"
+  },
+
+  {
+    location: [34.069444, -118.445278],
+    name: `<a href="https://www.ucla.edu" target="_blank">University of California, Los Angeles</a>`,
+    founded: 1882,
+    population: "44,300 students (est.)"
   },
 
   {
     location: [31.324167, 45.637222],
     name: `ancient city of <a href="https://en.wikipedia.org/wiki/Uruk" target="_blank">Uruk</a>`,
+    founded: -3500,
     population: "0"
   },
 
+  {
+    location: [19.432778, -99.133056],
+    name: `<a href="https://en.m.wikipedia.org/wiki/Z%C3%B3calo" target="_blank">the Zócalo</a>`,
+    founded: 1523,
+    population: ""
+  },  
+
   ];
 
-
+// cityLength stores how many records there are in the array called cities:
 var cityLength = cities.length;
 console.log(`Read in array of ${cityLength} cities.`);
 
+// drawing a line around the world along the 45th parallel north...
 var N45 = [
       [45.00, -180],
       [45.00, 180]
@@ -425,6 +603,7 @@ L.polyline(N45, {
     weight: "0.75"
     }).addTo(myMap);
 
+// ...and along the 45th parallel south.
 var S45 = [
     [-45.00, -180],
     [-45.00, 180]
@@ -437,30 +616,30 @@ L.polyline(S45, {
 console.log("drew a line around the world at the 45th parallels north and south");
 
 
-// The axe historique in Paris
-// starts at la Défense, say [48.890171, 2.243282]
-// and ends in front of the Louvre, about [48.861613, 2.333366]
+// The axe historique in Paris starts at la Défense and ends in front of the Louvre.
 var axeHistorique = [
   [48.890171, 2.243282],
   [48.861613, 2.333366]
 ];
 L.polyline(axeHistorique, {
-color: "blue",
+color: "lightblue",
 weight: "2"
 }).addTo(myMap);
 
-console.log("drew a line along the axe historique in Paris");
+console.log("drew a line along l'axe historique in Paris");
 
 
-  // Loop through the cities array and create one marker for each city, bind a popup containing its name and population add it to the map
+  // This loops through the array called cities and creates one marker for each place,
+  // then binds a popup containing that place's info and adds it to the map.
   for (var i = 0; i < cityLength; i++) {
     var city = cities[i];
     L.marker(city.location)
-      .bindPopup("<h1>" + city.name + "</h1> <hr> <h3>Population " + city.population + "</h3>")
+      .bindPopup("<h2>" + city.name + "</h2> <hr> <h3>founded " + city.founded + "</h3>")
       .addTo(myMap);
     console.log(`marked ${i+1}`);
   };
-console.log(`checked whether largest circle desired (${miles} miles) was greater than or less than 1 mile`);
+
+console.log(`Now checking whether largest circle desired (${miles}-mile radius) is greater than or less than 1 mile`);
 
 if (miles < 1) {
     L.circle(centerLatLong, {
@@ -498,4 +677,5 @@ if (miles >= 1) {
         console.log(`finished running a loop to draw concentric circles out to ${miles} miles around the center point`);
     };
 
-    console.log("finished running this script");
+console.log(`checked whether largest circle desired (${miles}-mile radius) was greater than or less than 1 mile.`);
+console.log("finished running this script");

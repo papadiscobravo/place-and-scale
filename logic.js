@@ -16,6 +16,7 @@ var NuukLatLong = [64.1814, -51.6941];
 var UrukLatLong = [31.324167, 45.637222];
 var Po10latlong = [41.864789, -87.613693];
 var royalObsLatLong = [51.478039, -0.0];
+var MLKLatLong = [33.755, -84.372222];
 
 // We could start with the map centered on a random point on the world map:
 // This sets a random longitude...
@@ -30,17 +31,21 @@ randomLat *= Math.round(Math.random()) ? 1 : -1;
 // chosen at random from our database of places...
 
 // This turns our random lat and long into a coordinate where the map will be centered.
-var centerLatLong = [randomLat, randomLong];
+// var centerLatLong = [randomLat, randomLong];
+var centerLatLong = MLKLatLong;
 console.log(`randomLatLong: ${centerLatLong}`);
 
 // If we let visitors change one variable, it would be miles, which sets the radius of the widest concentric circle.
-var miles = 1;
+var miles = 300;
 console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*5280)} feet) across.`);
+// Delaware is 96 miles long.
+console.log(`If you could line up multiple Delawares, the largest circle would be ${Math.round((miles * 2 / 96) * 10) / 10} Delawares long.`);
+
 // The Island of Manhattan is 13.4 miles long.
 console.log(`If you had multiple islands of Manhattan to line up end to end, the largest circle would be ${Math.round((miles * 2 / 13.4) * 10) / 10} Manhattans across.`);
 
 // The Eiffel Tower is currently 1063 feet tall.
-console.log(`If you laid Eiffel Towers end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 1063) * 10) / 10} Eiffel Towers across.`);
+console.log(`If you could lay the Eiffel Tower on its side and lay a bunch of them end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 1063) * 10) / 10} Eiffel Towers across.`);
 
 // A 747 is 231.3 feet long.
 console.log(`If you parked 747 airliners end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 231.3) * 10) / 10} school buses across.`);
@@ -817,7 +822,7 @@ console.log("reading in the array of cities");
 
   {
     location: [31.324167, 45.637222],
-    name: `ancient city of <a href="https://en.wikipedia.org/wiki/Uruk" target="_blank">Uruk</a>`,
+    name: `ancient city of <a href="https://www.worldhistory.org/uruk/" target="_blank">Uruk</a>`,
     founded: -3500
   },
 

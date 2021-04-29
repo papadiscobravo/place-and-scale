@@ -26,15 +26,29 @@ randomLong *= Math.round(Math.random()) ? 1 : -1;
 // (because the concentric circles get funny near the poles).
 var randomLat = Math.floor(Math.random() * 67);
 randomLat *= Math.round(Math.random()) ? 1 : -1;
-
+// Of course it'd be even cooler to center the map on a place
+// chosen at random from our database of places...
 
 // This turns our random lat and long into a coordinate where the map will be centered.
 var centerLatLong = [randomLat, randomLong];
 console.log(`randomLatLong: ${centerLatLong}`);
 
 // If we let visitors change one variable, it would be miles, which sets the radius of the widest concentric circle.
-var miles = 1000;
+var miles = 1;
 console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*5280)} feet) across.`);
+// The Island of Manhattan is 13.4 miles long.
+console.log(`If you had multiple islands of Manhattan to line up end to end, the largest circle would be ${Math.round((miles * 2 / 13.4) * 10) / 10} Manhattans across.`);
+
+// The Eiffel Tower is currently 1063 feet tall.
+console.log(`If you laid Eiffel Towers end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 1063) * 10) / 10} Eiffel Towers across.`);
+
+// A 747 is 231.3 feet long.
+console.log(`If you parked 747 airliners end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 231.3) * 10) / 10} school buses across.`);
+
+// A full-sized school bus is 35 feet long (or longer).
+console.log(`If you parked school buses end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 35) * 10) / 10} school buses across.`);
+
+
 
 // How many divisions would the visitor like to see the largest circle divided into?
 // I.e., how many concentric circles do we want to see?
@@ -42,7 +56,7 @@ console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*528
 // this would be the variable.
 // When radius is 1 mile, having four divisions is nice
 // because most people can walk a quarter mile in five minutes and that's easy to remember.
-var divisions = 10
+var divisions = 4
 
 // Radius starts at zero, but, when code gets to the loop that makes concentric circles,
 // radius will iterate by radiusIncrements up to the limit set in miles.
@@ -50,7 +64,7 @@ var radius = 0;
 
 // how many miles apart is one concentric circle from the next?
 var radiusIncrements = miles / divisions;
-console.log(`Each circle will be ${radiusIncrements} miles (${Math.round(radiusIncrements*5280)} feet) or about a ${Math.round(20 / (miles / radiusIncrements))} minute walk further from the center than the last.`);
+console.log(`Each circle will be ${radiusIncrements} miles (${Math.round(radiusIncrements*5280)} feet), or about a ${Math.round(radiusIncrements*20)} minute walk, from the next.`);
 
 // This sets zoom level at 2, which shows the whole world. I think we should start the map at this zoom level.
 var zoom = 2;

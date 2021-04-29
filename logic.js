@@ -31,37 +31,85 @@ randomLat *= Math.round(Math.random()) ? 1 : -1;
 // chosen at random from our database of places...
 
 // This turns our random lat and long into a coordinate where the map will be centered.
-// var centerLatLong = [randomLat, randomLong];
-var centerLatLong = MLKLatLong;
-console.log(`randomLatLong: ${centerLatLong}`);
 
-// If we let visitors change one variable, it would be miles, which sets the radius of the widest concentric circle.
-var miles = 300;
-console.log(`The largest circle will be ${miles*2} miles (${Math.round(miles*5280)} feet) across.`);
-// Delaware is 96 miles long.
-console.log(`If you could line up multiple Delawares, the largest circle would be ${Math.round((miles * 2 / 96) * 10) / 10} Delawares long.`);
+var centerLatLong = [randomLat, randomLong];
+// var centerLatLong = MLKLatLong;
+console.log(`the lat long center of this map starts at: ${centerLatLong}`);
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
 
-// The Island of Manhattan is 13.4 miles long.
-console.log(`If you had multiple islands of Manhattan to line up end to end, the largest circle would be ${Math.round((miles * 2 / 13.4) * 10) / 10} Manhattans across.`);
+// We said we'll let visitors change a variable, miles, which sets the radius of the widest concentric circle.
 
-// The Eiffel Tower is currently 1063 feet tall.
-console.log(`If you could lay the Eiffel Tower on its side and lay a bunch of them end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 1063) * 10) / 10} Eiffel Towers across.`);
+// ******* Other things follow from what value is set in miles:
 
-// A 747 is 231.3 feet long.
-console.log(`If you parked 747 airliners end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 231.3) * 10) / 10} school buses across.`);
+// var miles = 300;
+var miles = Math.random() * 10 + .5;
+miles = Math.round((miles * 10)) / 10;
+diameter = miles * 2;
 
+// ******* Adding another line of comments to make miles easier to find.
+
+
+// State for the visitor how big the outer circle is.
+console.log(`The largest circle is ${diameter} miles (${Math.round(diameter * 5280)} feet) across. Let's put that another way.`);
+
+// Evaluate that diameter against common dimensions, from smallest (the height of a person)
+// to largest (the length of Delaware) and pick the best one.
+// Let' say we if it would take more than 100 of something, move to the next largest thing:
+var maxCommonObjects = 100;
+
+// Here begins a switch statement that does that:
+
+switch (diameter / 96 < maxCommonObjects) {
+
+  case diameter * 5280 / 5.5 < maxCommonObjects:
+// 5.5 ft
+// The average height of a person in the U.S. is: female: 5'4", male: 5'9". (Source: N-HANES III.)
+console.log(`A person's about 5' 6" tall. If people laid down head to toe, the largest circle would be ${Math.round((miles * 2 * 5280 / 5.5) * 10) / 10} people across.`);
+  break;
+  
+  case diameter * 5280 / 35 < maxCommonObjects:
+// 35 ft
 // A full-sized school bus is 35 feet long (or longer).
-console.log(`If you parked school buses end to end in a line, the largest circle would be ${Math.round((miles * 2 * 5280 / 35) * 10) / 10} school buses across.`);
+console.log(`Many full-sized school buses are about 35 feet long. The largest circle would be ${Math.round((miles * 2 * 5280 / 35) * 10) / 10} such school buses across.`);
+  break;
+        
+  case diameter * 5280 / 231.3 < maxCommonObjects:
+// 231.3 ft
+// A 747 is 231.3 feet long.
+console.log(`A 747 jet airliner is 231.3 feet long. The largest circle would be ${Math.round((miles * 2 * 5280 / 231.3) * 10) / 10} 747s across.`);
+  break;
+        
+  case diameter * 5280 / 1063 < maxCommonObjects:
+// 1063 ft
+// The Eiffel Tower is currently 1063 feet tall.
+console.log(`The Eiffel Tower is currently 1063 feet tall. If you could lay it on its side, the largest circle would be ${Math.round((miles * 2 * 5280 / 1063) * 10) / 10} Eiffel Towers across.`);
+  break;
+        
+  case diameter / 13.4 < maxCommonObjects:
+// 13.4 miles
+// Manhattan is about 13.4 miles long.
+console.log(`The island of Manhattan's about 13.4 miles from top to bottom. The largest circle would be ${Math.round((miles * 2 / 13.4) * 10) / 10} Manhattans across.`);
+  break;
+
+  case diameter / 13.4 >= maxCommonObjects:
+// 96 miles
+// Delaware is 96 miles long.
+console.log(`Delaware is 96 miles long. The largest circle would be ${Math.round((miles * 2 / 96) * 10) / 10} Delawares long.`);
+  break;
+  };
+
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
 
 
-
+// We said we'd give visitors a second variable to change (probably with a drop-down): divisions.
 // How many divisions would the visitor like to see the largest circle divided into?
-// I.e., how many concentric circles do we want to see?
-// If we can give visitors a second variable to change (probably within a set range)
-// this would be the variable.
-// When radius is 1 mile, having four divisions is nice
-// because most people can walk a quarter mile in five minutes and that's easy to remember.
-var divisions = 4
+// ******
+
+// var divisions = 10
+var divisions = Math.round(Math.random() * 20)
+console.log(`The outer circle has ${divisions} divisions.`);
+
+// ******
 
 // Radius starts at zero, but, when code gets to the loop that makes concentric circles,
 // radius will iterate by radiusIncrements up to the limit set in miles.
@@ -69,13 +117,19 @@ var radius = 0;
 
 // how many miles apart is one concentric circle from the next?
 var radiusIncrements = miles / divisions;
-console.log(`Each circle will be ${radiusIncrements} miles (${Math.round(radiusIncrements*5280)} feet), or about a ${Math.round(radiusIncrements*20)} minute walk, from the next.`);
+console.log(`Each circle will be ${Math.round(radiusIncrements * 10) / 10} miles (${Math.round(radiusIncrements*5280)} feet), or about a ${Math.round(radiusIncrements*20)} minute walk, from the next.`);
 
-// This sets zoom level at 2, which shows the whole world. I think we should start the map at this zoom level.
+// This sets a zoom level to start.
+// In the long switch statement below, value are added to this.
+
 var zoom = 2;
 
 // This sets maximum zoom level for all tile layers
 var maxZoomLevel = 22;
+console.log(`Zoom level starts at ${zoom}. Visitors can't zoom in further than level ${maxZoomLevel}`);
+
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
+
 
 // Here's a long switch statement that sets zoom level based on the radius of the outermost circle, set in the variable miles.
 // It deserves a bit more refinement at the small end of the scale.
@@ -167,14 +221,14 @@ switch (miles <= 1999) {
 // 22         0.00625
 // 23         0.005
 
-console.log(`based on a maximum radius of ${miles}, this map starts at zoom level ${zoom}.`);
-console.log("initialized variables");
+console.log(`Based on a largest circle ${miles} across, this map is reset to zoom level ${zoom}.`);
+console.log("The main variables are now initialized.");
 
 // See a list of Mapbox-hosted public styles at
 // https://docs.mapbox.com/api/maps/styles/#mapbox-styles
 // https://docs.mapbox.com/mapbox-gl-js/example/setstyle/
 
-// Define variables for our tile layers
+// If we have time to let people pick a base map, great--I think most of it's here...
 var satellite = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: maxZoomLevel,
@@ -192,12 +246,11 @@ var dark = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{
 var street = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
   attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
   maxZoom: maxZoomLevel,
+// ...otherwise we can hardcode base map in the next line here:
   id: "satellite-v9",
   accessToken: API_KEY
 });
 
-
-// Only one base layer can be shown at a time
 var baseMaps = {
   Satellite: satellite,
   Dark: dark,
@@ -209,7 +262,7 @@ var myMap = L.map("map", {
     center: centerLatLong,
     zoom: zoom
 });
-console.log("created a map object");
+console.log("A map object has been created.");
 
   // Add the tile layer.
   L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
@@ -231,8 +284,56 @@ console.log("created a map object");
 
 console.log("Added a tile layer, read in the API key, and set the map view.");
 
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
 
-console.log("reading in the array of cities");
+// If the visitor lands in a random spot in a big ocean,
+// they should at least see something and know the interface isn't broken.
+// So this draws a line around the world along the 45th parallel north...
+var parallel = [
+  [45.00, -180],
+  [45.00, 180]
+];
+L.polyline(parallel, {
+color: "red",
+weight: "0.75"
+}).addTo(myMap);
+
+
+// ...the equator...    
+var parallel = [
+  [0, -180],
+  [0, 180]
+];
+L.polyline(parallel, {
+color: "#9999ff",
+weight: "0.75"
+}).addTo(myMap);
+
+// ...and the 45th parallel south.
+var parallel = [
+[-45.00, -180],
+[-45.00, 180]
+];
+L.polyline(parallel, {
+color: "red",
+weight: "0.75"
+}).addTo(myMap);
+
+console.log("Drew a blue line around the world at the equator and red lines around the world at the 45th parallels north and south");
+
+// easter egg
+var axeHistorique = [
+[48.890171, 2.243282],
+[48.861613, 2.333366]
+];
+L.polyline(axeHistorique, {
+color: "lightblue",
+weight: "2"
+}).addTo(myMap);
+
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
+
+console.log("Now starting to read in the primary dataset...");
   // The array containing each place's name, location, and date founded. It's not really cities any more.
   // Some of them still have population, which is a holdover from the Activity 3 code this started from.
   // I can put the data in this array into a table in a SQLite database, from which Flask will retrieve a JSON.
@@ -845,11 +946,11 @@ console.log("reading in the array of cities");
   },  
 
   ];
-console.log(`The array called places has ${places.length} records.`);
+console.log(`...which has ${places.length} records.`);
 
 // cityLength stores how many records there are in the array called cities:
 var placesLength = places.length;
-console.log(`Read in array of ${placesLength} places.`);
+console.log(`Read in ${placesLength} places.`);
 
   // This loops through the array called places and creates one marker for each place,
   // then binds a popup containing that place's info and adds it to the map.
@@ -867,11 +968,13 @@ console.log(`Read in array of ${placesLength} places.`);
     // console.log(`marked ${i+1}`);
   };
 
+console.log(`Popups bound to markers placed on map.`);
 
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
+console.log("Setting initial color and opacity values:");
 
 // Color is the color of the *boundary* of the concentric circle.
 Color = "#ffffff";
-console.log(`color: ${Color}`);
 
 // fillColor is the color of the *interior* of the concentric circle.
 var fillColor = Color;
@@ -880,8 +983,8 @@ var fillColor = Color;
 // we'll want to test and determine different optimal opacities for each view
 // and set them here:
 var opacity = 0.05;
-
-console.log("Set colors.");
+console.log(`color: ${Color}, fillColor: ${fillColor}, opacity: ${opacity}`);
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
 
 // If someone wants to see a circle with a radius of less than a mile,
 // this draws only one circle...
@@ -893,13 +996,15 @@ if (miles < 1) {
         radius: miles * 1609.34
         }).addTo(myMap);
 
-        console.log(`drew ${Math.round(miles*2*5280)}-foot diameter circle enclosing an area of ${Math.round(miles*miles*Math.PI)} square miles (${Math.round(miles*miles*Math.PI*27878400)} square feet) around the center point`);
+        console.log(`Drew ${Math.round(miles*2*5280)}-foot diameter circle enclosing an area of ${Math.round(miles*miles*Math.PI)} square miles (${Math.round(miles*miles*Math.PI*27878400)} square feet) around the center point`);
     };
+console.log(`checked whether largest circle (${miles}-mile radius) was greater than one mile.`);
+
 // ...but if someone wants to see a circle with a radius of a mile or more,
 // draw concentric circles:
 if (miles >= 1) {
 
-    console.log(`started running a loop to draw concentric circles out to ${miles} miles around the center point`);
+    console.log(`Started running a loop to draw concentric circles out to ${miles} miles around the center point.s`);
 
     for ( radius = 0 + radiusIncrements; radius <= miles;) {
 
@@ -910,65 +1015,14 @@ if (miles >= 1) {
           fillOpacity: opacity,
           radius: radius * 1609.34
         }).addTo(myMap);
-        // console.log(`drew ${radius*2}-mile diameter circle enclosing an area of ${Math.round(radius*radius*Math.PI)} square miles around the center point`);
+        // console.log(`Drew concentric circle ${Math.round((radius * 2) * 10 ) / 10} miles across.`);
 
-        console.log(`color: ${Color} opacity: ${opacity}`);
+        // console.log(`color: ${Color} opacity: ${opacity}`);
         radius = radius + radiusIncrements;
         };
-        console.log(`finished running a loop to draw concentric circles out to ${miles} miles around the center point`);
+        console.log(`Finished running the concentric circles loop.`);
     };
 
-console.log(`checked whether largest circle desired (${miles}-mile radius) was greater than or less than 1 mile.`);
-console.log(`randomLatLong: ${centerLatLong} zoom level ${zoom}`);console.log(`Now checking whether largest circle desired (${miles}-mile radius) is greater than or less than 1 mile`);
+console.log("-_-_-_-_-_-_-_-_-_-_-_-");
 
-
-// If the visitor lands in a random spot in a big ocean,
-// they should at least see something and know the interface isn't broken.
-// So this draws a line around the world along the 45th parallel north...
-var parallel = [
-      [45.00, -180],
-      [45.00, 180]
-    ];
-L.polyline(parallel, {
-    color: "red",
-    weight: "0.75"
-    }).addTo(myMap);
-
-
-// ...the equator...    
-    var parallel = [
-      [0, -180],
-      [0, 180]
-    ];
-L.polyline(parallel, {
-    color: "#9999ff",
-    weight: "0.75"
-    }).addTo(myMap);
-
-    // ...and the 45th parallel south.
-var parallel = [
-    [-45.00, -180],
-    [-45.00, 180]
-  ];
-L.polyline(parallel, {
-    color: "red",
-    weight: "0.75"
-    }).addTo(myMap);
-
-console.log("drew a line around the world at the equator and the 45th parallels north and south");
-
-
-// The axe historique in Paris starts at la Défense and ends in front of the Louvre.
-var axeHistorique = [
-  [48.890171, 2.243282],
-  [48.861613, 2.333366]
-];
-L.polyline(axeHistorique, {
-color: "lightblue",
-weight: "2"
-}).addTo(myMap);
-
-console.log("drew a line along l'axe historique in Paris");
-
-
-console.log("finished running this script");
+console.log(`Finished running this script with center at ${centerLatLong} lat long, a ${miles}-mile radius outer circle (enclosing ${Math.round((miles * miles * Math.PI) * 10) / 10} square miles and ${divisions} concentric circles), and zoom level ${zoom}.`);
